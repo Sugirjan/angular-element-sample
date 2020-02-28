@@ -26,7 +26,10 @@ jobs:
         run: npm run build
 
       - name: Build js
-        run: mkdir target && cat dist/angular-form/runtime-es2015*.js dist/angular-form/polyfills-es2015*.js dist/angular-form/main-es2015*.js > target/angular-form.js && cp dist/styles*.css > target/form-styles.css
+        run: mkdir target && cat dist/angular-form/runtime-es2015*.js dist/angular-form/polyfills-es2015*.js dist/angular-form/main-es2015*.js > target/angular-form.js
+
+      - name: Build styles
+        run: cat dist/angular-form/styles.*.css > target/form-styles.css
 
       - name: Deploy
         uses: tpaschalis/s3-sync-action@master
