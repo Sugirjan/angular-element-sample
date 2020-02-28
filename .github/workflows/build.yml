@@ -1,0 +1,40 @@
+name: Angular S3 Build
+on:
+  push:
+    branches:
+      - sample
+
+jobs:
+  build:
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@master
+
+      - name: Cache node modules
+        uses: actions/cache@v1
+        with:
+          path: node_modules
+          key: ${{ runner.OS }}-build-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.OS }}-build-
+            ${{ runner.OS }}-
+      - name: Install
+        run: npm install
+
+      - name: Build
+        run: npm run build
+
+      - name: Build js
+        run: mkdir target && cat dist/angular-form/runtime-es2015*.js dist/angular-form/polyfills-es2015*.js dist/angular-form/main-es2015*.js > target/angular-form.js && cp dist/styles*.css > target/form-styles.css
+
+      - name: Deploy
+        uses: tpaschalis/s3-sync-action@master
+        with:
+         args: --acl public-read --recursive
+        env:
+         FILE: ./target
+         AWS_REGION: 'us-east-1'
+         AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
