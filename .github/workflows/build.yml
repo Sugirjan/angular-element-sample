@@ -2,7 +2,7 @@ name: Angular S3 Build
 on:
   push:
     branches:
-      - sample
+      - target
 
 jobs:
   build:
